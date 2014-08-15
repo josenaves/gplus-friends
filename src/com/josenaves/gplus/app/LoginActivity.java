@@ -4,22 +4,30 @@ import android.content.Intent;
 import android.content.IntentSender.SendIntentException;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
 import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.plus.People.LoadPeopleResult;
 import com.google.android.gms.plus.Plus;
+import com.google.android.gms.plus.model.people.PersonBuffer;
 
 public class LoginActivity extends ActionBarActivity implements
-		OnConnectionFailedListener, ConnectionCallbacks {
+		OnConnectionFailedListener, ConnectionCallbacks,
+		ResultCallback<LoadPeopleResult> {
 
 	/* Request code used to invoke sign in user interactions. */
 	private static final int RC_SIGN_IN = 0;
+
+	private static final String TAG = LoginActivity.class.getSimpleName();
 
 	/* Client used to interact with Google APIs. */
 	private GoogleApiClient googleApiClient;
@@ -93,6 +101,9 @@ public class LoginActivity extends ActionBarActivity implements
 		// access Google APIs on behalf of the user.
 		signInClicked = false;
 		Toast.makeText(this, "User is connected!", Toast.LENGTH_LONG).show();
+
+		Plus.PeopleApi.loadVisible(googleApiClient, null).setResultCallback(
+				this);
 	}
 
 	@Override
@@ -129,7 +140,8 @@ public class LoginActivity extends ActionBarActivity implements
 	}
 
 	public void onClick(View view) {
-		if (view.getId() == R.id.sign_in_button && !googleApiClient.isConnecting()) {
+		if (view.getId() == R.id.sign_in_button
+				&& !googleApiClient.isConnecting()) {
 			signInClicked = true;
 			resolveSignInError();
 		}
@@ -140,9 +152,9 @@ public class LoginActivity extends ActionBarActivity implements
 		if (connectionResult.hasResolution()) {
 			try {
 				intentInProgress = true;
-				startIntentSenderForResult(connectionResult.getResolution().getIntentSender(), RC_SIGN_IN, null, 0, 0, 0);
-			} 
-			catch (SendIntentException e) {
+				startIntentSenderForResult(connectionResult.getResolution()
+						.getIntentSender(), RC_SIGN_IN, null, 0, 0, 0);
+			} catch (SendIntentException e) {
 				// The intent was canceled before it was sent. Return to the
 				// default
 				// state and attempt to connect to get an updated
@@ -151,6 +163,27 @@ public class LoginActivity extends ActionBarActivity implements
 				googleApiClient.connect();
 			}
 		}
+	}
+
+	@Override
+	public void onResult(LoadPeopleResult peopleData) {
+		if (peopleData.getStatus().getStatusCode() == CommonStatusCodes.SUCCESS) {
+			PersonBuffer personBuffer = peopleData.getPersonBuffer();
+			try {
+				int count = personBuffer.getCount();
+				for (int i = 0; i < count; i++) {
+					Log.d(TAG, "Display name: "
+							+ personBuffer.get(i).getDisplayName());
+				}
+			} finally {
+				personBuffer.close();
+			}
+		} else {
+			Log.e(TAG,
+					"Error requesting visible circles: "
+							+ peopleData.getStatus());
+		}
+
 	}
 
 }
