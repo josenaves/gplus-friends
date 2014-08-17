@@ -2,12 +2,12 @@ package com.josenaves.gplus.app;
 
 import android.database.Cursor;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager;
-import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v7.app.ActionBarActivity;
 
-public class FriendsActivity extends FragmentActivity implements LoaderManager.LoaderCallbacks<Cursor> {
+public class FriendsActivity extends ActionBarActivity 
+	implements LoaderManager.LoaderCallbacks<Cursor> {
 	
 	  // Identifies a particular Loader being used in this component
     private static final int LOADER = 66;
@@ -15,6 +15,7 @@ public class FriendsActivity extends FragmentActivity implements LoaderManager.L
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_friends);
 		
         // Initializes the CursorLoader. 
 		LoaderManager loaderManager = getSupportLoaderManager();
