@@ -18,7 +18,9 @@ import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListe
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.plus.People.LoadPeopleResult;
 import com.google.android.gms.plus.Plus;
+import com.google.android.gms.plus.model.people.Person;
 import com.google.android.gms.plus.model.people.PersonBuffer;
+import com.josenaves.gplus.app.contentprovider.GPlusOpenHelper;
 
 public class LoginActivity extends ActionBarActivity implements
 		OnConnectionFailedListener, ConnectionCallbacks,
@@ -49,6 +51,8 @@ public class LoginActivity extends ActionBarActivity implements
 	 * can resolve them when the user clicks sign-in.
 	 */
 	private ConnectionResult connectionResult;
+	
+	private GPlusOpenHelper db;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -100,10 +104,11 @@ public class LoginActivity extends ActionBarActivity implements
 		// We've resolved any connection errors. googleApiClient can be used to
 		// access Google APIs on behalf of the user.
 		signInClicked = false;
+		
 		Toast.makeText(this, "User is connected!", Toast.LENGTH_LONG).show();
 
-		Plus.PeopleApi.loadVisible(googleApiClient, null).setResultCallback(
-				this);
+		// ask for all visible people from user circles
+		Plus.PeopleApi.loadVisible(googleApiClient, null).setResultCallback(this);
 	}
 
 	@Override
@@ -116,9 +121,9 @@ public class LoginActivity extends ActionBarActivity implements
 		if (!intentInProgress && result.hasResolution()) {
 			try {
 				intentInProgress = true;
-				startIntentSenderForResult(result.getResolution()
-						.getIntentSender(), RC_SIGN_IN, null, 0, 0, 0);
-			} catch (SendIntentException e) {
+				startIntentSenderForResult(result.getResolution().getIntentSender(), RC_SIGN_IN, null, 0, 0, 0);
+			} 
+			catch (SendIntentException e) {
 				// The intent was canceled before it was sent.
 				// Return to the default state and attempt to
 				// connect to get an updated ConnectionResult.
@@ -128,11 +133,9 @@ public class LoginActivity extends ActionBarActivity implements
 		}
 	}
 
-	protected void onActivityResult(int requestCode, int responseCode,
-			Intent intent) {
+	protected void onActivityResult(int requestCode, int responseCode, Intent intent) {
 		if (requestCode == RC_SIGN_IN) {
 			intentInProgress = false;
-
 			if (!googleApiClient.isConnecting()) {
 				googleApiClient.connect();
 			}
@@ -140,8 +143,7 @@ public class LoginActivity extends ActionBarActivity implements
 	}
 
 	public void onClick(View view) {
-		if (view.getId() == R.id.sign_in_button
-				&& !googleApiClient.isConnecting()) {
+		if (view.getId() == R.id.sign_in_button && !googleApiClient.isConnecting()) {
 			signInClicked = true;
 			resolveSignInError();
 		}
@@ -152,13 +154,11 @@ public class LoginActivity extends ActionBarActivity implements
 		if (connectionResult.hasResolution()) {
 			try {
 				intentInProgress = true;
-				startIntentSenderForResult(connectionResult.getResolution()
-						.getIntentSender(), RC_SIGN_IN, null, 0, 0, 0);
-			} catch (SendIntentException e) {
-				// The intent was canceled before it was sent. Return to the
-				// default
-				// state and attempt to connect to get an updated
-				// ConnectionResult.
+				startIntentSenderForResult(connectionResult.getResolution().getIntentSender(), RC_SIGN_IN, null, 0, 0, 0);
+			} 
+			catch (SendIntentException e) {
+				// The intent was canceled before it was sent. Return to the default
+				// state and attempt to connect to get an updated ConnectionResult.
 				intentInProgress = false;
 				googleApiClient.connect();
 			}
@@ -171,19 +171,37 @@ public class LoginActivity extends ActionBarActivity implements
 			PersonBuffer personBuffer = peopleData.getPersonBuffer();
 			try {
 				int count = personBuffer.getCount();
-				for (int i = 0; i < count; i++) {
-					Log.d(TAG, "Display name: "
-							+ personBuffer.get(i).getDisplayName());
+				
+				if (count > 0) {
+					db = new GPlusOpenHelper(this);
+					db.recreateDB();
 				}
-			} finally {
+				
+				// get all friends and save them
+				for (int i = 0; i < count; i++) {
+					Person person = personBuffer.get(i);
+					db.insert(person);
+					Log.d(TAG, "Display name: " + person.getDisplayName());
+				}
+			} 
+			finally {
 				personBuffer.close();
+				if (db != null) {
+					db.close();
+					db = null;
+				}
 			}
-		} else {
-			Log.e(TAG,
-					"Error requesting visible circles: "
-							+ peopleData.getStatus());
+		} 
+		else {
+			Log.e(TAG, "Error requesting visible circles: " + peopleData.getStatus());
 		}
 
+	}
+	
+	public void getFriends(View view) {
+		Log.d(TAG, "getFriends");
+		Intent intent = new Intent(this, FriendsActivity.class);
+		startActivity(intent);
 	}
 
 }

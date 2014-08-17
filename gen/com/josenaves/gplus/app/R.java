@@ -1471,7 +1471,7 @@ containing a value of this type.
         public static final int action_menu_divider=0x7f050016;
         public static final int action_menu_presenter=0x7f050017;
         public static final int action_mode_close_button=0x7f050036;
-        public static final int action_settings=0x7f05004f;
+        public static final int action_settings=0x7f050052;
         public static final int activity_chooser_view_content=0x7f050037;
         public static final int always=0x7f05000b;
         public static final int beginning=0x7f050011;
@@ -1485,11 +1485,13 @@ containing a value of this type.
         public static final int default_activity_button=0x7f05003a;
         public static final int dialog=0x7f05000e;
         public static final int disableHome=0x7f050008;
+        public static final int display_name=0x7f050051;
         public static final int dropdown=0x7f05000f;
         public static final int edit_query=0x7f050042;
         public static final int end=0x7f050013;
         public static final int expand_activities_button=0x7f050038;
         public static final int expanded_menu=0x7f05003e;
+        public static final int get_friends=0x7f05004f;
         public static final int grayscale=0x7f05002a;
         public static final int holo_dark=0x7f05001d;
         public static final int holo_light=0x7f05001e;
@@ -1507,6 +1509,7 @@ containing a value of this type.
         public static final int never=0x7f050009;
         public static final int none=0x7f050010;
         public static final int normal=0x7f050000;
+        public static final int photo=0x7f050050;
         public static final int production=0x7f05001f;
         public static final int progress_circular=0x7f050018;
         public static final int progress_horizontal=0x7f050019;
@@ -1592,11 +1595,14 @@ containing a value of this type.
         public static final int abc_search_dropdown_item_icons_2line=0x7f030015;
         public static final int abc_search_view=0x7f030016;
         public static final int abc_simple_decor=0x7f030017;
-        public static final int activity_login=0x7f030018;
-        public static final int support_simple_spinner_dropdown_item=0x7f030019;
+        public static final int activity_friends=0x7f030018;
+        public static final int activity_login=0x7f030019;
+        public static final int friend=0x7f03001a;
+        public static final int support_simple_spinner_dropdown_item=0x7f03001b;
     }
     public static final class menu {
-        public static final int login=0x7f0c0000;
+        public static final int friends=0x7f0c0000;
+        public static final int login=0x7f0c0001;
     }
     public static final class string {
         /**  Content description for the action bar "home" affordance. [CHAR LIMIT=NONE] 
@@ -1639,7 +1645,7 @@ containing a value of this type.
         /**  Description of a share target (both in the list of such or the default share button) in a ShareActionProvider (share UI). [CHAR LIMIT=NONE] 
          */
         public static final int abc_shareactionprovider_share_with_application=0x7f0a000b;
-        public static final int action_settings=0x7f0a0029;
+        public static final int action_settings=0x7f0a0028;
         public static final int app_name=0x7f0a0027;
         /**  Button in confirmation dialog to enable Google Play services.  Clicking it
         will direct user to application settings of Google Play services where they
@@ -1730,7 +1736,8 @@ containing a value of this type.
         /**  Long form sign-in button text [CHAR LIMIT=30] 
          */
         public static final int common_signin_button_text_long=0x7f0a0025;
-        public static final int hello_world=0x7f0a0028;
+        public static final int show_friends=0x7f0a002a;
+        public static final int title_activity_friends=0x7f0a0029;
         /**  Text on a placeholder buy button when Google Play services is not
          available or up-to-date 
          */
