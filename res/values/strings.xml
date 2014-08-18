@@ -2,7 +2,8 @@
 <resources>
 
     <string name="app_name">gplus</string>
-    <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+    <string name="title_activity_friends">Amigos</string>
+    <string name="show_friends">Mostrar amigos</string>
 
 </resources>
