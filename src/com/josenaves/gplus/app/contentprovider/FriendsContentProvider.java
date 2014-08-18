@@ -17,10 +17,6 @@ public class FriendsContentProvider extends ContentProvider {
 	// used for the UriMacher
 	private static final int FRIENDS = 10;
 	private static final int FRIEND_ID = 20;
-	
-	private static final String AUTHORITY = "com.josenaves.gplus.friends";
-	
-	public static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY);
 
 	public static final String CONTENT_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE 	+ "/friends";
 	public static final String CONTENT_ITEM_TYPE = ContentResolver.CURSOR_ITEM_BASE_TYPE + "/friend";
@@ -30,8 +26,8 @@ public class FriendsContentProvider extends ContentProvider {
 	private static final UriMatcher URIMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 	
 	static {
-		URIMatcher.addURI(AUTHORITY, BASE_PATH, FRIENDS);
-		URIMatcher.addURI(AUTHORITY, BASE_PATH + "/#", FRIEND_ID);
+		URIMatcher.addURI(FriendsContract.AUTHORITY, BASE_PATH, FRIENDS);
+		URIMatcher.addURI(FriendsContract.AUTHORITY, BASE_PATH + "/#", FRIEND_ID);
 	}
 
 	private GPlusOpenHelper openHelper;
@@ -80,7 +76,18 @@ public class FriendsContentProvider extends ContentProvider {
 
 	@Override
 	public String getType(Uri uri) {
-		return null;
+		switch (URIMatcher.match(uri)) {
+		case FRIEND_ID:
+			return CONTENT_ITEM_TYPE;
+			
+		case FRIENDS:
+			return CONTENT_TYPE;
+			
+		default:
+			throw new IllegalArgumentException("Unknown URI: " + uri);
+
+		}
+
 	}
 
 	@Override
@@ -91,7 +98,7 @@ public class FriendsContentProvider extends ContentProvider {
 		long id = 0;
 
 		switch (uriType) {
-		case FRIENDS:
+		case FRIEND_ID:
 			id = sqlDB.insert(FriendsContract.Friends.TABLE_NAME, null, values);
 			break;
 

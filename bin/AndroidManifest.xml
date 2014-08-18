@@ -34,6 +34,11 @@
             android:name=".FriendsActivity"
             android:label="@string/title_activity_friends" >
         </activity>
+        
+        <provider android:name=".contentprovider.FriendsContentProvider" 
+        	android:authorities="com.josenaves.gplus.friends"
+        	android:exported="false" />
+        
     </application>
 
 </manifest>

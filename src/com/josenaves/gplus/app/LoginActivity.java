@@ -1,7 +1,10 @@
 package com.josenaves.gplus.app;
 
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.content.IntentSender.SendIntentException;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
@@ -20,6 +23,7 @@ import com.google.android.gms.plus.People.LoadPeopleResult;
 import com.google.android.gms.plus.Plus;
 import com.google.android.gms.plus.model.people.Person;
 import com.google.android.gms.plus.model.people.PersonBuffer;
+import com.josenaves.gplus.app.contentprovider.FriendsContract;
 import com.josenaves.gplus.app.contentprovider.GPlusOpenHelper;
 
 public class LoginActivity extends ActionBarActivity implements
@@ -52,7 +56,6 @@ public class LoginActivity extends ActionBarActivity implements
 	 */
 	private ConnectionResult connectionResult;
 	
-	private GPlusOpenHelper db;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -169,27 +172,29 @@ public class LoginActivity extends ActionBarActivity implements
 	public void onResult(LoadPeopleResult peopleData) {
 		if (peopleData.getStatus().getStatusCode() == CommonStatusCodes.SUCCESS) {
 			PersonBuffer personBuffer = peopleData.getPersonBuffer();
-			try {
-				int count = personBuffer.getCount();
+			int count = personBuffer.getCount();
+			
+			if (count > 0) {
+				new GPlusOpenHelper(this).recreateDB();
+			}
+			
+			// get all friends and save them
+			for (int i = 0; i < count; i++) {
+				Person person = personBuffer.get(i);
 				
-				if (count > 0) {
-					db = new GPlusOpenHelper(this);
-					db.recreateDB();
-				}
+				ContentValues values = new ContentValues();
+				values.put(FriendsContract.Friends._ID, person.getId());
+				values.put(FriendsContract.Friends.COLUMN_NAME_NAME, person.getDisplayName());
+				values.put(FriendsContract.Friends.COLUMN_NAME_IMAGE, person.getImage().getUrl());
+
 				
-				// get all friends and save them
-				for (int i = 0; i < count; i++) {
-					Person person = personBuffer.get(i);
-					db.insert(person);
-					Log.d(TAG, "Display name: " + person.getDisplayName());
-				}
-			} 
-			finally {
-				personBuffer.close();
-				if (db != null) {
-					db.close();
-					db = null;
-				}
+				Uri uri = new Uri.Builder().scheme("content")
+						.authority(FriendsContract.AUTHORITY)
+						.appendPath("/friends")
+						.build();
+						
+				uri = getContentResolver().insert(uri, values);
+				Log.d(TAG, "Uri inserted = " + uri);
 			}
 		} 
 		else {

@@ -1,10 +1,15 @@
 package com.josenaves.gplus.app.contentprovider;
 
+import android.net.Uri;
 import android.provider.BaseColumns;
 
 public final class FriendsContract {
 	public static final int DATABASE_VERSION = 1;
 	public static final String DATABASE_NAME = "gplus.db";
+	
+	public static final String AUTHORITY = "com.josenaves.gplus.friends";
+	public static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY);
+
 
 	private static final String TEXT_TYPE = " TEXT";
 	private static final String COMMA_SEP = ",";
