@@ -34,11 +34,23 @@
             android:name=".FriendsActivity"
             android:label="@string/title_activity_friends" >
         </activity>
-        
-        <provider android:name=".contentprovider.FriendsContentProvider" 
-        	android:authorities="com.josenaves.gplus.friends"
-        	android:exported="false" />
-        
+
+        <provider
+            android:name=".contentprovider.FriendsContentProvider"
+            android:authorities="com.josenaves.gplus.friends"
+            android:exported="false" />
+
+        <activity
+            android:name=".StartActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/title_activity_start"
+            android:theme="@style/FullscreenTheme" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>
