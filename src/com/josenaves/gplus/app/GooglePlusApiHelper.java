@@ -1,6 +1,7 @@
 package com.josenaves.gplus.app;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
@@ -8,6 +9,8 @@ import com.google.android.gms.common.api.Status;
 import com.google.android.gms.plus.Plus;
 
 public final class GooglePlusApiHelper {
+	
+	private static final String LOG_TAG = GooglePlusApiHelper.class.getSimpleName();
 
 	private GooglePlusApiHelper() {
 	}
@@ -47,14 +50,25 @@ public final class GooglePlusApiHelper {
 	}
 
 	public static void revokeAccess() {
-		Plus.AccountApi.clearDefaultAccount(API);
-		Plus.AccountApi.revokeAccessAndDisconnect(API).setResultCallback(
-				new ResultCallback<Status>() {
-					@Override
-					public void onResult(Status result) {
-					}
-
-				});
+		
+		if (API.isConnected()) {
+			Plus.AccountApi.clearDefaultAccount(API);
+			Plus.AccountApi.revokeAccessAndDisconnect(API).setResultCallback( new ResultCallback<Status>() {
+				@Override
+				public void onResult(Status result) {
+					Log.d(LOG_TAG, "Revoking access... result = " + result.getStatusMessage());
+				}
+			});
+		}
+		else {
+			Log.d(LOG_TAG, "Client not connected.");
+		}
+		
 	}
+	
+	public static GoogleApiClient getAPI() {
+		return API;
+	}
+	
 
 }

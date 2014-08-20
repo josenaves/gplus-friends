@@ -11,5 +11,13 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true" />
+    
+    <Button
+        android:id="@+id/revoke_button"
+        android:text="Revogar acesso"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+		android:layout_alignParentBottom="true" />
 
 </RelativeLayout>
