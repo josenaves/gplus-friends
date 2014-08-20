@@ -1,23 +1,23 @@
 package com.josenaves.gplus.app;
 
+import android.app.Activity;
+import android.app.LoaderManager;
+import android.content.CursorLoader;
+import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
-import android.support.v4.widget.SimpleCursorAdapter;
-import android.support.v7.app.ActionBarActivity;
+import android.widget.SimpleCursorAdapter;
 
 import com.josenaves.gplus.app.contentprovider.FriendsContract;
 import com.josenaves.gplus.app.contentprovider.FriendsContract.Friends;
 
-public class FriendsActivity extends ActionBarActivity 
+public class FriendsActivity extends Activity 
 	implements LoaderManager.LoaderCallbacks<Cursor> {
 
 	private SimpleCursorAdapter adapter;
 	
-    private static final int LOADER = 66;
+    private static final int LOADER = 0;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -32,7 +32,7 @@ public class FriendsActivity extends ActionBarActivity
 				0);
 		
         // Initializes the CursorLoader. 
-		LoaderManager loaderManager = getSupportLoaderManager();
+		LoaderManager loaderManager = getLoaderManager();
 		loaderManager.initLoader(LOADER, null, this);
 	}
 	

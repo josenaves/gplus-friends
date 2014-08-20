@@ -1,12 +1,11 @@
 package com.josenaves.gplus.app;
 
-import android.content.ContentResolver;
+import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.IntentSender.SendIntentException;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -26,7 +25,7 @@ import com.google.android.gms.plus.model.people.PersonBuffer;
 import com.josenaves.gplus.app.contentprovider.FriendsContract;
 import com.josenaves.gplus.app.contentprovider.GPlusOpenHelper;
 
-public class LoginActivity extends ActionBarActivity implements
+public class LoginActivity extends Activity implements
 		OnConnectionFailedListener, ConnectionCallbacks,
 		ResultCallback<LoadPeopleResult> {
 

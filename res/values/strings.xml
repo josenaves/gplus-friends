@@ -6,7 +6,6 @@
     <string name="title_activity_friends">Amigos</string>
     <string name="show_friends">Mostrar amigos</string>
     <string name="title_activity_start">StartActivity</string>
-    <string name="dummy_button">Dummy Button</string>
-    <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="gplus_button">Conectar com Google+</string>
 
 </resources>

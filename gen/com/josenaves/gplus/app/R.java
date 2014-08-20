@@ -417,17 +417,14 @@ containing a value of this type.
         public static final int powered_by_google_light=0x7f02001f;
     }
     public static final class id {
-        public static final int action_settings=0x7f07001c;
+        public static final int action_settings=0x7f070019;
         public static final int book_now=0x7f070010;
         public static final int buyButton=0x7f07000a;
         public static final int buy_now=0x7f07000f;
         public static final int buy_with_google=0x7f07000e;
         public static final int classic=0x7f070011;
-        public static final int display_name=0x7f070019;
-        public static final int dummy_button=0x7f070017;
-        public static final int fullscreen_content=0x7f070015;
-        public static final int fullscreen_content_controls=0x7f070016;
-        public static final int get_friends=0x7f07001b;
+        public static final int display_name=0x7f070017;
+        public static final int get_friends=0x7f070018;
         public static final int grayscale=0x7f070012;
         public static final int holo_dark=0x7f070005;
         public static final int holo_light=0x7f070006;
@@ -437,12 +434,12 @@ containing a value of this type.
         public static final int monochrome=0x7f070013;
         public static final int none=0x7f070000;
         public static final int normal=0x7f070001;
-        public static final int photo=0x7f070018;
+        public static final int photo=0x7f070016;
         public static final int production=0x7f070007;
         public static final int sandbox=0x7f070008;
         public static final int satellite=0x7f070002;
         public static final int selectionDetails=0x7f07000b;
-        public static final int sign_in_button=0x7f07001a;
+        public static final int sign_in_button=0x7f070015;
         public static final int strict_sandbox=0x7f070009;
         public static final int terrain=0x7f070003;
         public static final int wrap_content=0x7f07000d;
@@ -553,8 +550,7 @@ containing a value of this type.
         /**  Long form sign-in button text [CHAR LIMIT=30] 
          */
         public static final int common_signin_button_text_long=0x7f060018;
-        public static final int dummy_button=0x7f06001f;
-        public static final int dummy_content=0x7f060020;
+        public static final int gplus_button=0x7f06001f;
         public static final int show_friends=0x7f06001d;
         public static final int title_activity_friends=0x7f06001c;
         public static final int title_activity_start=0x7f06001e;
