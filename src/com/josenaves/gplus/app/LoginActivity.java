@@ -22,8 +22,8 @@ import com.google.android.gms.plus.People.LoadPeopleResult;
 import com.google.android.gms.plus.Plus;
 import com.google.android.gms.plus.model.people.Person;
 import com.google.android.gms.plus.model.people.PersonBuffer;
-import com.josenaves.gplus.app.contentprovider.FriendsContract;
-import com.josenaves.gplus.app.contentprovider.GPlusOpenHelper;
+import com.josenaves.gplus.app.data.FriendsContract;
+import com.josenaves.gplus.app.data.FriendsContract.FriendsEntry;
 
 public class LoginActivity extends Activity implements
 		OnConnectionFailedListener, ConnectionCallbacks,
@@ -174,7 +174,8 @@ public class LoginActivity extends Activity implements
 			int count = personBuffer.getCount();
 			
 			if (count > 0) {
-				new GPlusOpenHelper(this).recreateDB();
+				// TODO Recreate DB
+				//new FriendsDbHelper(this);
 			}
 			
 			// get all friends and save them
@@ -182,9 +183,9 @@ public class LoginActivity extends Activity implements
 				Person person = personBuffer.get(i);
 				
 				ContentValues values = new ContentValues();
-				values.put(FriendsContract.Friends._ID, person.getId());
-				values.put(FriendsContract.Friends.COLUMN_NAME_NAME, person.getDisplayName());
-				values.put(FriendsContract.Friends.COLUMN_NAME_IMAGE, person.getImage().getUrl());
+				values.put(FriendsEntry._ID, person.getId());
+				values.put(FriendsEntry.COLUMN_NAME_NAME, person.getDisplayName());
+				values.put(FriendsEntry.COLUMN_NAME_IMAGE, person.getImage().getUrl());
 
 				
 				Uri uri = new Uri.Builder().scheme("content")

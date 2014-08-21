@@ -21,7 +21,7 @@ import com.google.android.gms.plus.People.LoadPeopleResult;
 import com.google.android.gms.plus.Plus;
 import com.google.android.gms.plus.model.people.Person;
 import com.google.android.gms.plus.model.people.PersonBuffer;
-import com.josenaves.gplus.app.contentprovider.FriendsContract;
+import com.josenaves.gplus.app.data.FriendsContract.FriendsEntry;
 
 public class StartActivity extends Activity implements
 		android.view.View.OnClickListener, ConnectionCallbacks,
@@ -179,9 +179,9 @@ public class StartActivity extends Activity implements
 					Person person = personBuffer.get(i);
 
 					ContentValues values = new ContentValues();
-					values.put(FriendsContract.Friends._ID, person.getId());
-					values.put(FriendsContract.Friends.COLUMN_NAME_NAME, person.getDisplayName());
-					values.put(FriendsContract.Friends.COLUMN_NAME_IMAGE, person.getImage().getUrl());
+					values.put(FriendsEntry._ID, person.getId());
+					values.put(FriendsEntry.COLUMN_NAME_NAME, person.getDisplayName());
+					values.put(FriendsEntry.COLUMN_NAME_IMAGE, person.getImage().getUrl());
 
 					Log.d(LOG_TAG, "Name = " + person.getDisplayName() + ", url = " + person.getImage().getUrl());
 				}

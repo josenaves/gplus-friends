@@ -9,8 +9,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.widget.SimpleCursorAdapter;
 
-import com.josenaves.gplus.app.contentprovider.FriendsContract;
-import com.josenaves.gplus.app.contentprovider.FriendsContract.Friends;
+import com.josenaves.gplus.app.data.FriendsContract;
+import com.josenaves.gplus.app.data.FriendsContract.FriendsEntry;
 
 public class FriendsActivity extends Activity 
 	implements LoaderManager.LoaderCallbacks<Cursor> {
@@ -27,7 +27,7 @@ public class FriendsActivity extends Activity
 		// creates an empty adapter we'll use to display data
 		adapter = new SimpleCursorAdapter(getParent(), 
 				android.R.layout.simple_list_item_1, null, 
-				new String[] {FriendsContract.Friends.COLUMN_NAME_NAME},
+				new String[] {FriendsEntry.COLUMN_NAME_NAME},
 				new int[] {android.R.id.text1},
 				0);
 		
@@ -47,7 +47,7 @@ public class FriendsActivity extends Activity
 	    
 	    // Now create and return a CursorLoader that will take care of
 	    // creating a Cursor for the data being displayed.
-	    return new CursorLoader(getParent(), baseUri,null, null, null, Friends.COLUMN_NAME_NAME + " COLLATE LOCALIZED ASC");
+	    return new CursorLoader(getParent(), baseUri,null, null, null, FriendsEntry.COLUMN_NAME_NAME + " COLLATE LOCALIZED ASC");
 	}
 
 	@Override

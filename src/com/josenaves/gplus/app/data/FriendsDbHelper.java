@@ -1,4 +1,4 @@
-package com.josenaves.gplus.app.contentprovider;
+package com.josenaves.gplus.app.data;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -7,20 +7,32 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.google.android.gms.plus.model.people.Person;
+import com.josenaves.gplus.app.data.FriendsContract.FriendsEntry;
 
-public class GPlusOpenHelper extends SQLiteOpenHelper {
+public class FriendsDbHelper extends SQLiteOpenHelper {
     
-    public GPlusOpenHelper(Context context) {
-        super(context, FriendsContract.DATABASE_NAME, null,FriendsContract.DATABASE_VERSION);
+	public static final int DATABASE_VERSION = 1;
+	public static final String DATABASE_NAME = "friends.db";
+
+    public FriendsDbHelper(Context context) {
+        super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
 	@Override
 	public void onCreate(SQLiteDatabase db) {
-		createTable();
+		final String SQL_CREATE_FRIENDS_TABLE = 
+				"CREATE TABLE " + FriendsEntry.TABLE_NAME + " (" 
+				+ FriendsEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+				+ FriendsEntry.COLUMN_NAME_NAME + " TEXT, "
+				+ FriendsEntry.COLUMN_NAME_IMAGE +  " TEXT )";
+		
+        db.execSQL(SQL_CREATE_FRIENDS_TABLE);
 	}
 
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        db.execSQL("DROP TABLE IF EXISTS " + FriendsEntry.TABLE_NAME);
+        onCreate(db);
 	}
 
 	public long insert(Person person) {
@@ -29,12 +41,12 @@ public class GPlusOpenHelper extends SQLiteOpenHelper {
 
 		// Create a new map of values, where column names are the keys
 		ContentValues values = new ContentValues();
-		values.put(FriendsContract.Friends._ID, person.getId());
-		values.put(FriendsContract.Friends.COLUMN_NAME_NAME, person.getDisplayName());
-		values.put(FriendsContract.Friends.COLUMN_NAME_IMAGE, person.getImage().getUrl());
+		values.put(FriendsEntry._ID, person.getId());
+		values.put(FriendsEntry.COLUMN_NAME_NAME, person.getDisplayName());
+		values.put(FriendsEntry.COLUMN_NAME_IMAGE, person.getImage().getUrl());
 
 		// Insert the new row, returning the primary key value of the new row
-		long newRowId = db.insert(FriendsContract.Friends.TABLE_NAME, null, values);
+		long newRowId = db.insert(FriendsEntry.TABLE_NAME, null, values);
 		
 		return newRowId;
 	}
@@ -44,12 +56,12 @@ public class GPlusOpenHelper extends SQLiteOpenHelper {
 
 		// Define a projection that specifies which columns from the databases
 		// you will actually use after this query.
-		String[] projection = {FriendsContract.Friends.COLUMN_NAME_NAME, FriendsContract.Friends.COLUMN_NAME_IMAGE};
+		String[] projection = {FriendsEntry.COLUMN_NAME_NAME, FriendsEntry.COLUMN_NAME_IMAGE};
 
 		// How you want the results sorted in the resulting Cursor
-		String sortOrder = FriendsContract.Friends.COLUMN_NAME_NAME + " DESC";
+		String sortOrder = FriendsEntry.COLUMN_NAME_NAME + " DESC";
 
-		Cursor cursor = db.query(FriendsContract.Friends.TABLE_NAME,  // The table to query
+		Cursor cursor = db.query(FriendsEntry.TABLE_NAME,  // The table to query
 		    projection,                               // The columns to return
 		    null,                                // The columns for the WHERE clause
 		    null,                            // The values for the WHERE clause
@@ -59,17 +71,6 @@ public class GPlusOpenHelper extends SQLiteOpenHelper {
 		    );
 		 	
 		return cursor;
-	}
-	
-	public void recreateDB() {
-		SQLiteDatabase db = getWritableDatabase();
-		db.execSQL(FriendsContract.Friends.DELETE_TABLE);
-		createTable();
-	}
-	
-	public void createTable() {
-		SQLiteDatabase db = getWritableDatabase();
-        db.execSQL(FriendsContract.Friends.CREATE_TABLE);
 	}
 	
 }

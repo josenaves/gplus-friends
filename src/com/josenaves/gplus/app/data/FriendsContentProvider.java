@@ -1,4 +1,4 @@
-package com.josenaves.gplus.app.contentprovider;
+package com.josenaves.gplus.app.data;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -11,6 +11,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
+
+import com.josenaves.gplus.app.data.FriendsContract.FriendsEntry;
 
 public class FriendsContentProvider extends ContentProvider {
 
@@ -30,11 +32,11 @@ public class FriendsContentProvider extends ContentProvider {
 		URIMatcher.addURI(FriendsContract.AUTHORITY, BASE_PATH + "/#", FRIEND_ID);
 	}
 
-	private GPlusOpenHelper openHelper;
+	private FriendsDbHelper openHelper;
 
 	@Override
 	public boolean onCreate() {
-		openHelper = new GPlusOpenHelper(getContext());
+		openHelper = new FriendsDbHelper(getContext());
 		return true;
 	}
 
@@ -48,7 +50,7 @@ public class FriendsContentProvider extends ContentProvider {
 		checkColumns(projection);
 
 		// Set the table
-		queryBuilder.setTables(FriendsContract.Friends.TABLE_NAME);
+		queryBuilder.setTables(FriendsEntry.TABLE_NAME);
 
 		int uriType = URIMatcher.match(uri);
 		
@@ -58,7 +60,7 @@ public class FriendsContentProvider extends ContentProvider {
 				
 			case FRIEND_ID:
 				// adding the ID to the original query
-				queryBuilder.appendWhere(FriendsContract.Friends.COLUMN_NAME_ID + "=" + uri.getLastPathSegment());
+				queryBuilder.appendWhere(FriendsEntry.COLUMN_NAME_ID + "=" + uri.getLastPathSegment());
 				break;
 				
 			default:
@@ -99,7 +101,7 @@ public class FriendsContentProvider extends ContentProvider {
 
 		switch (uriType) {
 		case FRIEND_ID:
-			id = sqlDB.insert(FriendsContract.Friends.TABLE_NAME, null, values);
+			id = sqlDB.insert(FriendsEntry.TABLE_NAME, null, values);
 			break;
 
 		default:
@@ -122,7 +124,7 @@ public class FriendsContentProvider extends ContentProvider {
 
 	private void checkColumns(String[] projection) {
 		
-		String[] available = { FriendsContract.Friends.COLUMN_NAME_NAME, FriendsContract.Friends.COLUMN_NAME_IMAGE };
+		String[] available = { FriendsEntry.COLUMN_NAME_NAME, FriendsEntry.COLUMN_NAME_IMAGE };
 		
 		if (projection != null) {
 			HashSet<String> requestedColumns = new HashSet<String>(Arrays.asList(projection));
