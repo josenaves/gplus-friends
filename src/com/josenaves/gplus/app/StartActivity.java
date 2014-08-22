@@ -115,9 +115,6 @@ public class StartActivity extends Activity implements
 
 	@Override
 	public void onConnected(Bundle connectionHint) {
-		// load all friends
-		// new FriendsTask(this).execute();
-
 		Intent intent = new Intent(this, FriendsActivity.class);
 		startActivity(intent);
 	}

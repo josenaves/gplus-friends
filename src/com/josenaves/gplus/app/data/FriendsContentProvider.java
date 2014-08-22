@@ -156,7 +156,7 @@ public class FriendsContentProvider extends ContentProvider {
 
 	private void checkColumns(String[] projection) {
 		
-		String[] available = { FriendsEntry.COLUMN_NAME_NAME, FriendsEntry.COLUMN_NAME_IMAGE };
+		String[] available = { FriendsEntry._ID, FriendsEntry.COLUMN_NAME_NAME, FriendsEntry.COLUMN_NAME_IMAGE };
 		
 		if (projection != null) {
 			HashSet<String> requestedColumns = new HashSet<String>(Arrays.asList(projection));
@@ -164,6 +164,7 @@ public class FriendsContentProvider extends ContentProvider {
 			
 			// check if all columns which are requested are available
 			if (!availableColumns.containsAll(requestedColumns)) {
+				Log.e(LOG_TAG, "Projection column not found in database!");
 				throw new IllegalArgumentException("Unknown columns in projection");
 			}
 		}

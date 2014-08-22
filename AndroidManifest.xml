@@ -44,7 +44,7 @@
         </activity>
         
         <provider
-            android:name="data.FriendsContentProvider"
+            android:name="com.josenaves.gplus.app.data.FriendsContentProvider"
             android:authorities="com.josenaves.gplus.friends"
             android:exported="false" />
         
