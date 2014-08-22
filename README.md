@@ -1,4 +1,4 @@
-gplus-friends
+gplus-friends (work in progress - not working)
 =============
 
 A simple Android app that shows how to:
