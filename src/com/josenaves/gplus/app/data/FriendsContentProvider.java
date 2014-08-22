@@ -4,12 +4,10 @@ import java.util.Arrays;
 import java.util.HashSet;
 
 import android.content.ContentProvider;
-import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteQueryBuilder;
+import android.database.SQLException;
 import android.net.Uri;
 
 import com.josenaves.gplus.app.data.FriendsContract.FriendsEntry;
@@ -17,21 +15,23 @@ import com.josenaves.gplus.app.data.FriendsContract.FriendsEntry;
 public class FriendsContentProvider extends ContentProvider {
 
 	// used for the UriMacher
-	private static final int FRIENDS = 10;
-	private static final int FRIEND_ID = 20;
+	private static final int FRIEND = 10;
+	private static final int FRIEND_ID = 11;
 
-	public static final String CONTENT_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE 	+ "/friends";
-	public static final String CONTENT_ITEM_TYPE = ContentResolver.CURSOR_ITEM_BASE_TYPE + "/friend";
+	// The URI Matcher used by this content provider.
+	private static final UriMatcher URIMatcher = buildUriMatcher();
 
-	private static final String BASE_PATH = "friends";
-
-	private static final UriMatcher URIMatcher = new UriMatcher(UriMatcher.NO_MATCH);
-	
-	static {
-		URIMatcher.addURI(FriendsContract.AUTHORITY, BASE_PATH, FRIENDS);
-		URIMatcher.addURI(FriendsContract.AUTHORITY, BASE_PATH + "/#", FRIEND_ID);
+	private static UriMatcher buildUriMatcher() {
+		final UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
+		final String authority = FriendsContract.CONTENT_AUTHORITY;
+		
+		// for each type of URI, here is a corresponding code
+		matcher.addURI(authority, FriendsContract.PATH_FRIEND, FRIEND);
+		matcher.addURI(authority, FriendsContract.PATH_FRIEND + "/#", FRIEND_ID);
+		
+		return matcher;
 	}
-
+	
 	private FriendsDbHelper openHelper;
 
 	@Override
@@ -39,36 +39,43 @@ public class FriendsContentProvider extends ContentProvider {
 		openHelper = new FriendsDbHelper(getContext());
 		return true;
 	}
+	
+	@Override
+	public String getType(Uri uri) {
+		switch (URIMatcher.match(uri)) {
+		case FRIEND_ID:
+			return FriendsEntry.CONTENT_ITEM_TYPE;
+			
+		case FRIEND:
+			return FriendsEntry.CONTENT_DIR_TYPE;
+			
+		default:
+			throw new UnsupportedOperationException("Unknown URI: " + uri);
+		}
+	}
 
 	@Override
 	public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
 
-		// Using SQLiteQueryBuilder instead of query() method
-		SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
+		Cursor cursor;
 
 		// check if the caller has requested a column which does not exists
 		checkColumns(projection);
 
-		// Set the table
-		queryBuilder.setTables(FriendsEntry.TABLE_NAME);
-
-		int uriType = URIMatcher.match(uri);
-		
-		switch (uriType) {
-			case FRIENDS:
+		switch (URIMatcher.match(uri)) {
+			// "friend"
+			case FRIEND:
+				cursor = null;
 				break;
 				
+			// "friend/#"
 			case FRIEND_ID:
-				// adding the ID to the original query
-				queryBuilder.appendWhere(FriendsEntry.COLUMN_NAME_ID + "=" + uri.getLastPathSegment());
+				cursor = openHelper.getReadableDatabase().query(FriendsEntry.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder); 
 				break;
 				
 			default:
 				throw new IllegalArgumentException("Unknown URI: " + uri);
 		}
-
-		SQLiteDatabase db = openHelper.getWritableDatabase();
-		Cursor cursor = queryBuilder.query(db, projection, selection, selectionArgs, null, null, sortOrder);
 		
 		// make sure that potential listeners are getting notified
 		cursor.setNotificationUri(getContext().getContentResolver(), uri);
@@ -76,50 +83,71 @@ public class FriendsContentProvider extends ContentProvider {
 		return cursor;
 	}
 
-	@Override
-	public String getType(Uri uri) {
-		switch (URIMatcher.match(uri)) {
-		case FRIEND_ID:
-			return CONTENT_ITEM_TYPE;
-			
-		case FRIENDS:
-			return CONTENT_TYPE;
-			
-		default:
-			throw new IllegalArgumentException("Unknown URI: " + uri);
 
-		}
-
-	}
 
 	@Override
 	public Uri insert(Uri uri, ContentValues values) {
 
-		int uriType = URIMatcher.match(uri);
-		SQLiteDatabase sqlDB = openHelper.getWritableDatabase();
-		long id = 0;
-
-		switch (uriType) {
+		Uri retUri;
+		
+		switch (URIMatcher.match(uri)) {
 		case FRIEND_ID:
-			id = sqlDB.insert(FriendsEntry.TABLE_NAME, null, values);
+			long id = openHelper.getWritableDatabase().insert(FriendsEntry.TABLE_NAME, null, values);
+			if (id > 0) {
+				retUri = FriendsEntry.buildFriendUri(id);
+			}
+			else {
+				throw new SQLException("Failed to insert row into " + uri);
+			}
 			break;
 
 		default:
 			throw new IllegalArgumentException("Unknown URI: " + uri);
 		}
-
+		
+		// notify all listeners
 		getContext().getContentResolver().notifyChange(uri, null);
-		return Uri.parse(BASE_PATH + "/" + id);
+		
+		return retUri;
 	}
 
 	@Override
 	public int delete(Uri uri, String selection, String[] selectionArgs) {
-		return 0;
+
+		int rowsDeleted = 0; 
+		
+		switch (URIMatcher.match(uri)) {
+			case FRIEND:
+				rowsDeleted = openHelper.getWritableDatabase().delete(FriendsEntry.TABLE_NAME, selection, selectionArgs);
+				break;
+				
+			default:	
+				throw new IllegalArgumentException("Unknown URI: " + uri);
+		}
+		
+		// notify all listeners (if anything had changed)
+		if (null == selection || 0 != rowsDeleted) getContext().getContentResolver().notifyChange(uri, null);
+		
+		return rowsDeleted;
 	}
 
 	@Override
 	public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
-		return 0;
+		int rowsUpdated = 0; 
+		
+		switch (URIMatcher.match(uri)) {
+			case FRIEND:
+				rowsUpdated = openHelper.getWritableDatabase().update(FriendsEntry.TABLE_NAME, values, selection, selectionArgs);
+				break;
+				
+			default:	
+				throw new IllegalArgumentException("Unknown URI: " + uri);
+		}
+		
+		// notify all listeners (if anything had changed)
+		if (0 != rowsUpdated) getContext().getContentResolver().notifyChange(uri, null);
+		
+		return rowsUpdated;
 	}
 
 	private void checkColumns(String[] projection) {

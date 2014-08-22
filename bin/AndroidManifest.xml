@@ -31,11 +31,6 @@
             android:label="@string/title_activity_friends" >
         </activity>
 
-        <provider
-            android:name="com.josenaves.gplus.app.data.FriendsContentProvider"
-            android:authorities="com.josenaves.gplus.friends"
-            android:exported="false" />
-
         <activity
             android:name=".StartActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
@@ -47,6 +42,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        
+        <provider
+            android:name="data.FriendsContentProvider"
+            android:authorities="com.josenaves.gplus.friends"
+            android:exported="false" />
+        
     </application>
 
 </manifest>

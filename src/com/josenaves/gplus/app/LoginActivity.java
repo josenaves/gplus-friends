@@ -189,8 +189,8 @@ public class LoginActivity extends Activity implements
 
 				
 				Uri uri = new Uri.Builder().scheme("content")
-						.authority(FriendsContract.AUTHORITY)
-						.appendPath("/friends")
+						.authority(FriendsContract.CONTENT_AUTHORITY)
+						.appendPath(FriendsContract.PATH_FRIEND)
 						.build();
 						
 				uri = getContentResolver().insert(uri, values);

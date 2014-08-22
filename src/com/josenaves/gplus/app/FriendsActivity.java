@@ -9,7 +9,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.widget.SimpleCursorAdapter;
 
-import com.josenaves.gplus.app.data.FriendsContract;
 import com.josenaves.gplus.app.data.FriendsContract.FriendsEntry;
 
 public class FriendsActivity extends Activity 
@@ -43,7 +42,7 @@ public class FriendsActivity extends Activity
 	    // sample only has one Loader, so we don't care about the ID.
 	    // First, pick the base URI to use depending on whether we are
 	    // currently filtering.
-	    Uri baseUri = FriendsContract.CONTENT_URI;
+	    Uri baseUri = FriendsEntry.CONTENT_URI;
 	    
 	    // Now create and return a CursorLoader that will take care of
 	    // creating a Cursor for the data being displayed.
