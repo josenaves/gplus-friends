@@ -201,8 +201,9 @@ public class FriendsContentProvider extends ContentProvider {
 			default:	
 				return super.bulkInsert(uri, values);
 		}
-
     }
 
+	
+	
 	
 }

@@ -5,14 +5,14 @@ import android.content.Intent;
 import android.content.IntentSender.SendIntentException;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
-
 import android.view.View.OnClickListener;
+import android.widget.Button;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
 import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
+import com.josenaves.gplus.app.helper.GooglePlusApiHelper;
 
 public class StartActivity extends Activity implements
 		OnClickListener, ConnectionCallbacks, OnConnectionFailedListener {
@@ -116,10 +116,10 @@ public class StartActivity extends Activity implements
 	@Override
 	public void onConnected(Bundle connectionHint) {
 		// load all friends
-		new FriendsTask().execute();
+		// new FriendsTask(this).execute();
 
-		//		Intent intent = new Intent(this, FriendsActivity.class);
-		//		startActivity(intent);
+		Intent intent = new Intent(this, FriendsActivity.class);
+		startActivity(intent);
 	}
 
 	@Override

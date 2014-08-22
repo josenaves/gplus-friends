@@ -1,4 +1,4 @@
-package com.josenaves.gplus.app;
+package com.josenaves.gplus.app.helper;
 
 import android.content.Context;
 import android.util.Log;
