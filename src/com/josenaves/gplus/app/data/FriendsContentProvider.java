@@ -8,12 +8,16 @@ import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.SQLException;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
+import android.util.Log;
 
 import com.josenaves.gplus.app.data.FriendsContract.FriendsEntry;
 
 public class FriendsContentProvider extends ContentProvider {
 
+	private static final String LOG_TAG = FriendsContentProvider.class.getSimpleName();
+	
 	// used for the UriMacher
 	private static final int FRIEND = 10;
 	private static final int FRIEND_ID = 11;
@@ -164,4 +168,41 @@ public class FriendsContentProvider extends ContentProvider {
 			}
 		}
 	}
+	
+	@Override
+    public int bulkInsert(Uri uri, ContentValues[] values) {
+		final SQLiteDatabase db = openHelper.getWritableDatabase();
+		
+		switch (URIMatcher.match(uri)) {
+			case FRIEND:
+				db.beginTransaction();
+				int rowCount = 0;
+				try {
+					for (ContentValues value : values) {
+						long id = db.insert(FriendsEntry.TABLE_NAME, null, value);
+						if (id != -1) {
+							rowCount++;
+						}
+					}
+					db.setTransactionSuccessful();
+				}
+				catch (Exception e) {
+					Log.e(LOG_TAG, "Error bulk inserting " + values);
+				}
+				finally {
+					db.endTransaction();
+				}
+				
+				// make sure that potential listeners are getting notified
+				getContext().getContentResolver().notifyChange(uri, null);
+
+				return rowCount;
+			
+			default:	
+				return super.bulkInsert(uri, values);
+		}
+
+    }
+
+	
 }
