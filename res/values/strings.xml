@@ -3,9 +3,9 @@
 
     <string name="app_name">gplus</string>
     <string name="action_settings">Settings</string>
-    <string name="title_activity_friends">Amigos</string>
-    <string name="show_friends">Mostrar amigos</string>
-    <string name="title_activity_start">StartActivity</string>
-    <string name="gplus_button">Conectar com Google+</string>
+    <string name="title_activity_friends">Friends</string>
+    <string name="show_friends">Show friends</string>
+    <string name="title_activity_start">G+ Friends</string>
+    <string name="gplus_button">Connect with G+</string>
 
 </resources>
