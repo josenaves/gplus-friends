@@ -1,25 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="horizontal" >
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    android:minHeight="?android:attr/listPreferredItemHeight"
+    android:orientation="horizontal"
+    android:padding="8dp" >
 
-    <TextView
-        android:id="@+id/list_item_id"
+    <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="ID" />
+        android:contentDescription="Just a friend"
+        android:src="@drawable/friend" />
 
     <TextView
         android:id="@+id/list_item_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:padding="8dp"
         android:text="Name" />
-
-    <TextView
-        android:id="@+id/list_item_url"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="URL" />
 
 </LinearLayout>

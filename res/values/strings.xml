@@ -8,4 +8,7 @@
     <string name="title_activity_start">G+ Friends</string>
     <string name="gplus_button">Connect with G+</string>
 
+    <string name="sync_account_type">gplusfriends.com.josenaves</string>
+    <string name="content_authority">com.josenaves.gplus</string>
+
 </resources>
