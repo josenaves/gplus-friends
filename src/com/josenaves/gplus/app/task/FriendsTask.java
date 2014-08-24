@@ -1,9 +1,9 @@
 package com.josenaves.gplus.app.task;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.ContentUris;
 import android.content.ContentValues;
-import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -24,14 +24,15 @@ public final class FriendsTask extends AsyncTask<Void, Void, Void> implements Re
 	
 	private ProgressDialog progress;
 	
-	private Context context;
+	private Activity context;
 	
-	public FriendsTask(Context context) {
+	public FriendsTask(Activity context) {
 		this.context = context;
 	}
 
 	@Override
 	protected void onPreExecute() {
+		super.onPreExecute();
 		progress = ProgressDialog.show(context, "Please wait", "Getting your friends data ...", true);
 	}
 
@@ -46,6 +47,7 @@ public final class FriendsTask extends AsyncTask<Void, Void, Void> implements Re
 
 	@Override
 	protected void onPostExecute(Void result) {
+		super.onPostExecute(result);
 		if (progress.isShowing()) {
 			progress.dismiss();
 		}

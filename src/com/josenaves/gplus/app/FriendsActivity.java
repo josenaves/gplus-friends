@@ -6,15 +6,17 @@ import android.content.CursorLoader;
 import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 
 import com.josenaves.gplus.app.data.FriendsContract.FriendsEntry;
 import com.josenaves.gplus.app.task.FriendsTask;
 
-public class FriendsActivity extends Activity implements
-		LoaderManager.LoaderCallbacks<Cursor> {
+public class FriendsActivity extends Activity implements LoaderManager.LoaderCallbacks<Cursor> {
 
+	private static final String LOG_TAG = FriendsActivity.class.getSimpleName();
+	
 	private SimpleCursorAdapter friendsAdapter;
 
 	private static final int FRIENDS_LOADER = 0;
@@ -25,6 +27,8 @@ public class FriendsActivity extends Activity implements
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		Log.d(LOG_TAG, "onCreate");
+		
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_friends);
 		
@@ -46,14 +50,13 @@ public class FriendsActivity extends Activity implements
 
 	@Override
 	public void onStart() {
+		
+		Log.d(LOG_TAG, "onStart");
+
 		super.onStart();
 		updateFriendsList();
 	}
 
-	private void updateFriendsList() {
-		FriendsTask task = new FriendsTask(this);
-		task.execute();
-	}
 
 	@Override
 	public Loader<Cursor> onCreateLoader(int loaderId, Bundle args) {
@@ -77,5 +80,10 @@ public class FriendsActivity extends Activity implements
 		// above is about to be closed. We need to make sure we are no
 		// longer using it.
 		friendsAdapter.swapCursor(null);
+	}
+	
+	private void updateFriendsList() {
+		FriendsTask task = new FriendsTask(this);
+		task.execute();
 	}
 }
