@@ -16,38 +16,41 @@
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
+        android:theme="@android:style/Theme.Holo.Light" >
+        
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
-
-        <activity
-            android:name=".LoginActivity"
-            android:label="@string/app_name" >
-        </activity>
-        
-        <activity
-            android:name=".FriendsActivity"
-            android:label="@string/title_activity_friends" >
-        </activity>
 
         <activity
             android:name=".StartActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_start"
             android:theme="@style/FullscreenTheme" >
+            
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            
         </activity>
         
+        <activity
+            android:name=".AboutMeActivity"
+            android:label="@string/app_name" />
+        
+        <activity
+            android:name=".FriendsActivity"
+            android:label="@string/app_name" />
+        
+        
+
+        <!-- Our contentProvider that stores our friends data -->
         <provider
             android:name="com.josenaves.gplus.app.data.FriendsContentProvider"
-            android:authorities="com.josenaves.gplus.friends"
-            android:exported="false" />
-        
+            android:authorities="@string/content_authority"
+            android:exported="false"  />
+
     </application>
 
 </manifest>

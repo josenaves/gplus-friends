@@ -41,6 +41,9 @@ public class FriendsContentProvider extends ContentProvider {
 	@Override
 	public boolean onCreate() {
 		openHelper = new FriendsDbHelper(getContext());
+		
+		// TODO remove it --> this just force deletion every run
+		openHelper.onUpgrade(openHelper.getWritableDatabase(), 0, 0);
 		return true;
 	}
 	
@@ -69,7 +72,7 @@ public class FriendsContentProvider extends ContentProvider {
 		switch (URIMatcher.match(uri)) {
 			// "friend"
 			case FRIEND:
-				cursor = null;
+				cursor = openHelper.getReadableDatabase().query(FriendsEntry.TABLE_NAME, projection, null, null, null, null, sortOrder); 
 				break;
 				
 			// "friend/#"
@@ -87,15 +90,13 @@ public class FriendsContentProvider extends ContentProvider {
 		return cursor;
 	}
 
-
-
 	@Override
 	public Uri insert(Uri uri, ContentValues values) {
-
+		int match = URIMatcher.match(uri);
 		Uri retUri;
 		
-		switch (URIMatcher.match(uri)) {
-		case FRIEND_ID:
+		switch (match) {
+		case FRIEND:
 			long id = openHelper.getWritableDatabase().insert(FriendsEntry.TABLE_NAME, null, values);
 			if (id > 0) {
 				retUri = FriendsEntry.buildFriendUri(id);
@@ -156,7 +157,7 @@ public class FriendsContentProvider extends ContentProvider {
 
 	private void checkColumns(String[] projection) {
 		
-		String[] available = { FriendsEntry._ID, FriendsEntry.COLUMN_NAME_NAME, FriendsEntry.COLUMN_NAME_IMAGE };
+		String[] available = { FriendsEntry._ID, FriendsEntry.COLUMN_NAME_GID, FriendsEntry.COLUMN_NAME_NAME, FriendsEntry.COLUMN_NAME_IMAGE };
 		
 		if (projection != null) {
 			HashSet<String> requestedColumns = new HashSet<String>(Arrays.asList(projection));

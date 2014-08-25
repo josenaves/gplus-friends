@@ -115,7 +115,7 @@ public class StartActivity extends Activity implements
 
 	@Override
 	public void onConnected(Bundle connectionHint) {
-		Intent intent = new Intent(this, FriendsActivity.class);
+		Intent intent = new Intent(this, AboutMeActivity.class);
 		startActivity(intent);
 	}
 
