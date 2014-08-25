@@ -65,10 +65,8 @@ public final class GooglePlusApiHelper {
 		}
 		
 	}
-	
+
 	public static GoogleApiClient getAPI() {
 		return API;
 	}
-	
-
 }

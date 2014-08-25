@@ -1,6 +1,5 @@
 package com.josenaves.gplus.app;
 
-import android.app.Activity;
 import android.app.LoaderManager;
 import android.content.CursorLoader;
 import android.content.Loader;
@@ -11,9 +10,10 @@ import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 
 import com.josenaves.gplus.app.data.FriendsContract.FriendsEntry;
+import com.josenaves.gplus.app.helper.GooglePlusApiHelper;
 import com.josenaves.gplus.app.task.FriendsTask;
 
-public class FriendsActivity extends Activity implements LoaderManager.LoaderCallbacks<Cursor> {
+public class FriendsActivity extends GooglePlusActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
 	private static final String LOG_TAG = FriendsActivity.class.getSimpleName();
 	
@@ -51,10 +51,15 @@ public class FriendsActivity extends Activity implements LoaderManager.LoaderCal
 	@Override
 	public void onStart() {
 		
-		Log.d(LOG_TAG, "onStart");
+		if (!GooglePlusApiHelper.isConnected()) {
+			GooglePlusApiHelper.connect();
+		}
+		
+		FriendsTask task = new FriendsTask(this);
+		task.execute();
 
+		Log.d(LOG_TAG, "onStart");
 		super.onStart();
-		updateFriendsList();
 	}
 
 
@@ -81,9 +86,5 @@ public class FriendsActivity extends Activity implements LoaderManager.LoaderCal
 		// longer using it.
 		friendsAdapter.swapCursor(null);
 	}
-	
-	private void updateFriendsList() {
-		FriendsTask task = new FriendsTask(this);
-		task.execute();
-	}
+		
 }

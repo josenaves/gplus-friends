@@ -1,13 +1,13 @@
 package com.josenaves.gplus.app.task;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.widget.ProgressBar;
 
 import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.android.gms.common.api.ResultCallback;
@@ -15,6 +15,7 @@ import com.google.android.gms.plus.People.LoadPeopleResult;
 import com.google.android.gms.plus.Plus;
 import com.google.android.gms.plus.model.people.Person;
 import com.google.android.gms.plus.model.people.PersonBuffer;
+import com.josenaves.gplus.app.R;
 import com.josenaves.gplus.app.data.FriendsContract.FriendsEntry;
 import com.josenaves.gplus.app.helper.GooglePlusApiHelper;
 
@@ -22,9 +23,11 @@ public final class FriendsTask extends AsyncTask<Void, Void, Void> implements Re
 	
 	private final String LOG_TAG = FriendsTask.class.getSimpleName();
 	
-	private ProgressDialog progress;
-	
 	private Activity context;
+	
+	private ProgressBar progressBar;
+
+	private boolean waitingResult;
 	
 	public FriendsTask(Activity context) {
 		this.context = context;
@@ -33,24 +36,29 @@ public final class FriendsTask extends AsyncTask<Void, Void, Void> implements Re
 	@Override
 	protected void onPreExecute() {
 		super.onPreExecute();
-		progress = ProgressDialog.show(context, "Please wait", "Getting your friends data ...", true);
+		Log.d(LOG_TAG, "Asking for friends list...");
+		waitingResult = true;
+		progressBar = (ProgressBar) context.findViewById(R.id.progressbar_friends);
 	}
 
 	@Override
 	protected Void doInBackground(Void... params) {
-
-		// ask for all visible people from user circles
-		Plus.PeopleApi.loadVisible(GooglePlusApiHelper.getAPI(), null).setResultCallback(this);
-
+		
+		if (GooglePlusApiHelper.getAPI().isConnected()) {
+			progressBar.setVisibility(ProgressBar.VISIBLE);
+			// ask for all visible people from user circles
+			Plus.PeopleApi.loadVisible(GooglePlusApiHelper.getAPI(), null).setResultCallback(this);
+		}
+		else {
+			Log.w(LOG_TAG, "API is not connected!");
+		}
 		return null;
 	}
 
 	@Override
 	protected void onPostExecute(Void result) {
 		super.onPostExecute(result);
-		if (progress.isShowing()) {
-			progress.dismiss();
-		}
+		progressBar.setVisibility(ProgressBar.GONE);
 	}
 
 	@Override
@@ -72,6 +80,8 @@ public final class FriendsTask extends AsyncTask<Void, Void, Void> implements Re
 		else {
 			Log.e(LOG_TAG, "Error requesting visible circles: " + peopleData.getStatus());
 		}
+		
+		waitingResult = false;
 	}
 	
 	
