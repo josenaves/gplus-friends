@@ -10,6 +10,7 @@
         android:layout_height="32dp"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"
+        android:adjustViewBounds="true"
         android:scaleType="fitXY" />
 
     <TextView
@@ -26,5 +27,14 @@
         android:layout_below="@+id/text_my_name"
         android:layout_centerHorizontal="true"
         android:onClick="getFriends" />
+    
+    <Button
+        android:id="@+id/revoke_button"
+        android:text="Revoke access"
+        android:onClick="revokeAccess"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+		android:layout_alignParentBottom="true" />
 
 </RelativeLayout>
