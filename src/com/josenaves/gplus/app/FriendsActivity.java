@@ -10,7 +10,6 @@ import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 
 import com.josenaves.gplus.app.data.FriendsContract.FriendsEntry;
-import com.josenaves.gplus.app.helper.GooglePlusApiHelper;
 import com.josenaves.gplus.app.task.FriendsTask;
 
 public class FriendsActivity extends GooglePlusActivity implements LoaderManager.LoaderCallbacks<Cursor> {
@@ -18,7 +17,7 @@ public class FriendsActivity extends GooglePlusActivity implements LoaderManager
 	private static final String LOG_TAG = FriendsActivity.class.getSimpleName();
 	
 	private SimpleCursorAdapter friendsAdapter;
-
+	
 	private static final int FRIENDS_LOADER = 0;
 
 	private static final String[] FRIENDS_COLUMNS = {
@@ -50,26 +49,17 @@ public class FriendsActivity extends GooglePlusActivity implements LoaderManager
 
 	@Override
 	public void onStart() {
-		
-		if (!GooglePlusApiHelper.isConnected()) {
-			GooglePlusApiHelper.connect();
-		}
-		
-		FriendsTask task = new FriendsTask(this);
-		task.execute();
-
-		Log.d(LOG_TAG, "onStart");
 		super.onStart();
+		Log.d(LOG_TAG, "onStart");
+		
+		api.connect();
 	}
-
 
 	@Override
 	public Loader<Cursor> onCreateLoader(int loaderId, Bundle args) {
 		// Now create and return a CursorLoader that will take care of
 		// creating a Cursor for the data being displayed.
-
 		String sortOrder = FriendsEntry.COLUMN_NAME_NAME + " COLLATE LOCALIZED ASC";
-
 		return new CursorLoader(this, FriendsEntry.CONTENT_URI, FRIENDS_COLUMNS, null, null, sortOrder);
 	}
 
@@ -86,5 +76,13 @@ public class FriendsActivity extends GooglePlusActivity implements LoaderManager
 		// longer using it.
 		friendsAdapter.swapCursor(null);
 	}
+	
+	@Override
+	public void onConnected(Bundle connectionHint) {
+		Log.d(LOG_TAG, "Connected - starting FriendsTask");
+		
+		FriendsTask task = new FriendsTask(this, api);
+		task.execute();
+	}		
 		
 }

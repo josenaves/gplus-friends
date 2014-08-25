@@ -43,7 +43,7 @@ public class FriendsContentProvider extends ContentProvider {
 		openHelper = new FriendsDbHelper(getContext());
 		
 		// TODO remove it --> this just force deletion every run
-		openHelper.onUpgrade(openHelper.getWritableDatabase(), 0, 0);
+		//openHelper.onUpgrade(openHelper.getWritableDatabase(), 0, 0);
 		return true;
 	}
 	
@@ -157,7 +157,7 @@ public class FriendsContentProvider extends ContentProvider {
 
 	private void checkColumns(String[] projection) {
 		
-		String[] available = { FriendsEntry._ID, FriendsEntry.COLUMN_NAME_GID, FriendsEntry.COLUMN_NAME_NAME, FriendsEntry.COLUMN_NAME_IMAGE };
+		String[] available = { FriendsEntry._ID, FriendsEntry.COLUMN_NAME_GID, FriendsEntry.COLUMN_NAME_NAME, FriendsEntry.COLUMN_NAME_IMAGE, FriendsEntry.COLUMN_NAME_COUNT };
 		
 		if (projection != null) {
 			HashSet<String> requestedColumns = new HashSet<String>(Arrays.asList(projection));
@@ -204,8 +204,5 @@ public class FriendsContentProvider extends ContentProvider {
 				return super.bulkInsert(uri, values);
 		}
     }
-
-	
-	
 	
 }

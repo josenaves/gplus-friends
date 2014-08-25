@@ -45,6 +45,8 @@ public final class FriendsContract implements BaseColumns {
 		public static final String COLUMN_NAME_GID = "gplusId";
 		public static final String COLUMN_NAME_NAME = "name";
 		public static final String COLUMN_NAME_IMAGE = "imageUrl";
+		
+		public static final String COLUMN_NAME_COUNT = "count(*)";
 
 		public static final String DELETE_TABLE = "DROP TABLE IF EXISTS " + TABLE_NAME;
 		

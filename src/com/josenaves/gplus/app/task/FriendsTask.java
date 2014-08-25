@@ -1,53 +1,60 @@
 package com.josenaves.gplus.app.task;
 
-import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
-import android.widget.ProgressBar;
 
 import com.google.android.gms.common.api.CommonStatusCodes;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.plus.People.LoadPeopleResult;
 import com.google.android.gms.plus.Plus;
 import com.google.android.gms.plus.model.people.Person;
 import com.google.android.gms.plus.model.people.PersonBuffer;
-import com.josenaves.gplus.app.R;
+import com.josenaves.gplus.app.FriendsActivity;
 import com.josenaves.gplus.app.data.FriendsContract.FriendsEntry;
-import com.josenaves.gplus.app.helper.GooglePlusApiHelper;
 
 public final class FriendsTask extends AsyncTask<Void, Void, Void> implements ResultCallback<LoadPeopleResult> {
 	
 	private final String LOG_TAG = FriendsTask.class.getSimpleName();
-	
-	private Activity context;
-	
-	private ProgressBar progressBar;
 
-	private boolean waitingResult;
+	private GoogleApiClient api;
+	private FriendsActivity view;
 	
-	public FriendsTask(Activity context) {
-		this.context = context;
+	private ProgressDialog progressDialog;
+	
+	public FriendsTask(FriendsActivity view, GoogleApiClient api) {
+		this.view = view;
+		this.api = api;
 	}
 
 	@Override
 	protected void onPreExecute() {
 		super.onPreExecute();
 		Log.d(LOG_TAG, "Asking for friends list...");
-		waitingResult = true;
-		progressBar = (ProgressBar) context.findViewById(R.id.progressbar_friends);
+		progressDialog = ProgressDialog.show(view, "Please wait", "Getting your friends...", true);
 	}
 
 	@Override
 	protected Void doInBackground(Void... params) {
 		
-		if (GooglePlusApiHelper.getAPI().isConnected()) {
-			progressBar.setVisibility(ProgressBar.VISIBLE);
+		if (peopleCount() != 0) {
+			Log.w(LOG_TAG, "There are people on db... done!");
+			
+			if (progressDialog.isShowing()) {
+				progressDialog.dismiss();
+			}
+
+			return null;
+		}
+		
+		if (api.isConnected()) {
 			// ask for all visible people from user circles
-			Plus.PeopleApi.loadVisible(GooglePlusApiHelper.getAPI(), null).setResultCallback(this);
+			Plus.PeopleApi.loadVisible(api, null).setResultCallback(this);
 		}
 		else {
 			Log.w(LOG_TAG, "API is not connected!");
@@ -58,7 +65,6 @@ public final class FriendsTask extends AsyncTask<Void, Void, Void> implements Re
 	@Override
 	protected void onPostExecute(Void result) {
 		super.onPostExecute(result);
-		progressBar.setVisibility(ProgressBar.GONE);
 	}
 
 	@Override
@@ -75,15 +81,17 @@ public final class FriendsTask extends AsyncTask<Void, Void, Void> implements Re
 				Log.d(LOG_TAG, "Person (from G+) = " + person + ", id = " + person.getId() + ", displayname: " + person.getDisplayName());
 
 				long id = addFriend(person.getId(), person.getDisplayName(), person.getImage().getUrl());
+				Log.d(LOG_TAG, "Person id: " + id + " created in db.");
 			}
 		} 
 		else {
 			Log.e(LOG_TAG, "Error requesting visible circles: " + peopleData.getStatus());
 		}
 		
-		waitingResult = false;
+		if (progressDialog.isShowing()) {
+			progressDialog.dismiss();
+		}
 	}
-	
 	
 	private long addFriend(String gid, String name, String imageUrl) {
 		long prevId = previouslyInserted(gid);
@@ -97,7 +105,7 @@ public final class FriendsTask extends AsyncTask<Void, Void, Void> implements Re
 			values.put(FriendsEntry.COLUMN_NAME_NAME, name);
 			values.put(FriendsEntry.COLUMN_NAME_IMAGE, imageUrl);
 			
-			Uri friendInsertUri = context.getContentResolver().insert(FriendsEntry.CONTENT_URI, values);
+			Uri friendInsertUri = view.getContentResolver().insert(FriendsEntry.CONTENT_URI, values);
 			Log.v(LOG_TAG, "URI " + friendInsertUri);
 
 			return ContentUris.parseId(friendInsertUri); 
@@ -119,7 +127,7 @@ public final class FriendsTask extends AsyncTask<Void, Void, Void> implements Re
 		String[] selectionArgs = {gid};
 		
 		// check if this friend already exists in the database
-		Cursor cursor = context.getContentResolver().query(
+		Cursor cursor = view.getContentResolver().query(
 				FriendsEntry.CONTENT_URI,
 				projection,
 				selectionClause, 
@@ -135,12 +143,37 @@ public final class FriendsTask extends AsyncTask<Void, Void, Void> implements Re
 				Log.v(LOG_TAG, "Cursor column:" + column + ", value: " + cursor.getString(cursor.getColumnIndex(column)) );
 			}
 			
-			
 			int columnIndex = cursor.getColumnIndex(FriendsEntry.COLUMN_NAME_ID);
 			return cursor.getLong(columnIndex);
 		}
 		
 		return -1;
 	}
+	
+	private int peopleCount() {
+		// A "projection" defines the columns that will be returned for each row
+		String[] projection = new String[] {"count(*)"};
+		
+		// Defines a string to contain the selection clause
+		String selectionClause = null;
+		
+		// Initializes an array to contain selection arguments
+		String[] selectionArgs = null;
+		
+		// check if this friend already exists in the database
+		Cursor cursor = view.getContentResolver().query(
+				FriendsEntry.CONTENT_URI,
+				projection,
+				selectionClause, 
+				selectionArgs,
+				null);
+		
+		if (cursor.getCount() == 0) {
+			return 0;
+		}
 
+	    cursor.moveToFirst();
+	    return cursor.getInt(0);
+	}
+	
 }

@@ -8,14 +8,14 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 
 import com.google.android.gms.common.SignInButton;
-import com.josenaves.gplus.app.helper.GooglePlusApiHelper;
 
 public class StartActivity extends GooglePlusActivity implements OnClickListener{
 
 	private static final String LOG_TAG = StartActivity.class.getSimpleName();
 	
 	private SignInButton signinButton;
-	private Button revokeButton;
+	
+	private boolean connecting;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -24,23 +24,18 @@ public class StartActivity extends GooglePlusActivity implements OnClickListener
 
 		signinButton = (SignInButton) findViewById(R.id.sign_in_button);
 		signinButton.setOnClickListener(this);
-
-		revokeButton = (Button) findViewById(R.id.revoke_button);
-		revokeButton.setOnClickListener(this);
 	}
 
 	@Override
 	public void onClick(View view) {
 		int viewId = view.getId();
 
-		if (viewId == R.id.sign_in_button && !GooglePlusApiHelper.isConnecting()) {
+		if (viewId == R.id.sign_in_button && !api.isConnecting()) {
 			signinButton.setEnabled(false);
-			GooglePlusApiHelper.connect();
+			api.connect();
+			
+			connecting = true;
 		} 
-		else if (viewId == R.id.revoke_button) {
-			GooglePlusApiHelper.revokeAccess();
-			signinButton.setEnabled(true);
-		}
 	}
 
 	@Override

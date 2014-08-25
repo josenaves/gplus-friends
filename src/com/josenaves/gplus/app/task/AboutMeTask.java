@@ -14,24 +14,24 @@ import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.plus.Plus;
 import com.google.android.gms.plus.model.people.Person;
 import com.josenaves.gplus.app.AboutMeActivity;
 import com.josenaves.gplus.app.R;
-import com.josenaves.gplus.app.helper.GooglePlusApiHelper;
 import com.josenaves.gplus.app.task.AboutMeTask.UserInfo;
 
 public final class AboutMeTask extends AsyncTask<Void, Void, UserInfo> {
 	
 	private final String LOG_TAG = AboutMeTask.class.getSimpleName();
-	
+
+	private GoogleApiClient api;
 	private ProgressDialog progress;
-	
 	private AboutMeActivity view;
-	
 	private UserInfo me;
 	
-	public AboutMeTask(AboutMeActivity view) {
+	public AboutMeTask(AboutMeActivity view, GoogleApiClient api) {
+		this.api = api;
 		this.view = view;
 	}
 
@@ -46,7 +46,7 @@ public final class AboutMeTask extends AsyncTask<Void, Void, UserInfo> {
 		
 		Log.d(LOG_TAG, "Getting profile data");
 		// get data about me
-		Person myself = Plus.PeopleApi.getCurrentPerson(GooglePlusApiHelper.getAPI());
+		Person myself = Plus.PeopleApi.getCurrentPerson(api);
 		if (myself != null) {
 			me = new UserInfo(myself.getDisplayName(), myself.getImage().getUrl());
 			

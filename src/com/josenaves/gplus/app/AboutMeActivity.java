@@ -14,18 +14,16 @@ public class AboutMeActivity extends GooglePlusActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		Log.d(LOG_TAG, "onCreate");
-		
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_about_me);
-		
-		AboutMeTask task = new AboutMeTask(this);
-		task.execute();
 	}
 
 	@Override
 	public void onStart() {
 		Log.d(LOG_TAG, "onStart");
 		super.onStart();
+		
+		api.connect();
 	}
 	
 	@Override
@@ -40,14 +38,26 @@ public class AboutMeActivity extends GooglePlusActivity {
 		super.onPause();
 	}
 	
-	@Override
-	protected void onRestart() {
-		Log.d(LOG_TAG, "onRestart");
-		super.onRestart();
+	public void revokeAccess(View view) {
+		int viewId = view.getId();
+		if (viewId == R.id.revoke_button) {
+			revoke();
+			
+			// go back to login screen
+			Intent intent = new Intent(this, StartActivity.class);
+			startActivity(intent);
+		}
 	}
 
 	public void getFriends(View view) {
 		Intent intent = new Intent(this, FriendsActivity.class);
 		startActivity(intent);
 	}
+	
+	@Override
+	public void onConnected(Bundle connectionHint) {
+		Log.d(LOG_TAG, "Connected - starting AboutMe");
+		AboutMeTask task = new AboutMeTask(this, api);
+		task.execute();
+	}	
 }
