@@ -10,7 +10,9 @@ import android.util.Log;
 
 import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.plus.People;
 import com.google.android.gms.plus.People.LoadPeopleResult;
 import com.google.android.gms.plus.Plus;
 import com.google.android.gms.plus.model.people.Person;
@@ -18,7 +20,7 @@ import com.google.android.gms.plus.model.people.PersonBuffer;
 import com.josenaves.gplus.app.FriendsActivity;
 import com.josenaves.gplus.app.data.FriendsContract.FriendsEntry;
 
-public final class FriendsTask extends AsyncTask<Void, Void, Void> implements ResultCallback<LoadPeopleResult> {
+public final class FriendsTask extends AsyncTask<Void, Void, Void> {
 	
 	private final String LOG_TAG = FriendsTask.class.getSimpleName();
 
@@ -54,7 +56,36 @@ public final class FriendsTask extends AsyncTask<Void, Void, Void> implements Re
 		
 		if (api.isConnected()) {
 			// ask for all visible people from user circles
-			Plus.PeopleApi.loadVisible(api, null).setResultCallback(this);
+			PendingResult<LoadPeopleResult> callback = Plus.PeopleApi.loadVisible(api, null);
+			callback.setResultCallback(new ResultCallback<People.LoadPeopleResult>() {
+
+				@Override
+				public void onResult(LoadPeopleResult result) {
+					if (result.getStatus().getStatusCode() == CommonStatusCodes.SUCCESS) {
+						PersonBuffer personBuffer = result.getPersonBuffer();
+						int count = personBuffer.getCount();
+					
+						Log.d(LOG_TAG, "Total people in circles = " + count);
+						
+						// get all friends and save them
+						for (int i = 0; i < count; i++) {
+							Person person = personBuffer.get(i);
+							Log.d(LOG_TAG, "Person (from G+) = " + person + ", id = " + person.getId() + ", displayname: " + person.getDisplayName());
+
+							long id = addFriend(person.getId(), person.getDisplayName(), person.getImage().getUrl());
+							Log.d(LOG_TAG, "Person id: " + id + " created in db.");
+						}
+					} 
+					else {
+						Log.e(LOG_TAG, "Error requesting visible circles: " + result.getStatus());
+					}
+					
+					if (progressDialog.isShowing()) {
+						progressDialog.dismiss();
+					}
+				}
+				
+			});
 		}
 		else {
 			Log.w(LOG_TAG, "API is not connected!");
@@ -67,31 +98,6 @@ public final class FriendsTask extends AsyncTask<Void, Void, Void> implements Re
 		super.onPostExecute(result);
 	}
 
-	@Override
-	public void onResult(LoadPeopleResult peopleData) {
-		if (peopleData.getStatus().getStatusCode() == CommonStatusCodes.SUCCESS) {
-			PersonBuffer personBuffer = peopleData.getPersonBuffer();
-			int count = personBuffer.getCount();
-		
-			Log.d(LOG_TAG, "Total people in circles = " + count);
-			
-			// get all friends and save them
-			for (int i = 0; i < count; i++) {
-				Person person = personBuffer.get(i);
-				Log.d(LOG_TAG, "Person (from G+) = " + person + ", id = " + person.getId() + ", displayname: " + person.getDisplayName());
-
-				long id = addFriend(person.getId(), person.getDisplayName(), person.getImage().getUrl());
-				Log.d(LOG_TAG, "Person id: " + id + " created in db.");
-			}
-		} 
-		else {
-			Log.e(LOG_TAG, "Error requesting visible circles: " + peopleData.getStatus());
-		}
-		
-		if (progressDialog.isShowing()) {
-			progressDialog.dismiss();
-		}
-	}
 	
 	private long addFriend(String gid, String name, String imageUrl) {
 		long prevId = previouslyInserted(gid);

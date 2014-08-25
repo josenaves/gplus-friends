@@ -1,10 +1,14 @@
 package com.josenaves.gplus.app;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
+import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.plus.Plus;
 import com.josenaves.gplus.app.task.AboutMeTask;
 
 public class AboutMeActivity extends GooglePlusActivity {
@@ -26,27 +30,38 @@ public class AboutMeActivity extends GooglePlusActivity {
 		api.connect();
 	}
 	
-	@Override
-	protected void onResume() {
-		Log.d(LOG_TAG, "onResume");
-		super.onResume();
-	}
-	
-	@Override
-	protected void onPause() {
-		Log.d(LOG_TAG, "onPause");
-		super.onPause();
-	}
-	
 	public void revokeAccess(View view) {
-		int viewId = view.getId();
-		if (viewId == R.id.revoke_button) {
-			revoke();
+		
+		Log.d(LOG_TAG, "revokeAccess");
+		
+		new AsyncTask<Void, Void, Void>() {
+			@Override
+			protected Void doInBackground(Void... params) {
+				if (api.isConnected()) {
+					Plus.AccountApi.clearDefaultAccount(api);
+					PendingResult<com.google.android.gms.common.api.Status> pending =  Plus.AccountApi.revokeAccessAndDisconnect(api);
+					pending.setResultCallback(new ResultCallback<com.google.android.gms.common.api.Status>() {
+						@Override
+						public void onResult(com.google.android.gms.common.api.Status result) {
+							Log.d(LOG_TAG, "Revoking access... result = " + result.getStatusMessage());
+						}
+					});
+				} 
+				else {
+					Log.d(LOG_TAG, "Client not connected.");
+				}
+	
+				return null;
+			}
 			
-			// go back to login screen
-			Intent intent = new Intent(this, StartActivity.class);
-			startActivity(intent);
-		}
+			@Override
+			protected void onPostExecute(Void result) {
+				super.onPostExecute(result);
+				// go back to login screen
+				Intent intent = new Intent(getApplicationContext(), StartActivity.class);
+				startActivity(intent);
+			}
+		}.execute();
 	}
 
 	public void getFriends(View view) {

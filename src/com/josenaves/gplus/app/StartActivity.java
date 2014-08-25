@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.Button;
 
 import com.google.android.gms.common.SignInButton;
 
@@ -15,8 +14,6 @@ public class StartActivity extends GooglePlusActivity implements OnClickListener
 	
 	private SignInButton signinButton;
 	
-	private boolean connecting;
-
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -27,14 +24,26 @@ public class StartActivity extends GooglePlusActivity implements OnClickListener
 	}
 
 	@Override
+	protected void onStop() {
+		super.onStop();
+	}
+	
+	@Override
+	protected void onResume() {
+		super.onResume();
+		if (api.isConnected()) {
+			api.disconnect();
+		}
+		signinButton.setEnabled(true);
+	}
+	
+	@Override
 	public void onClick(View view) {
 		int viewId = view.getId();
 
 		if (viewId == R.id.sign_in_button && !api.isConnecting()) {
 			signinButton.setEnabled(false);
 			api.connect();
-			
-			connecting = true;
 		} 
 	}
 
